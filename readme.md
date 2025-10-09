@@ -1,6 +1,6 @@
 # LibLCE
 
-[![Docs](https://img.shields.io/badge/Read%20Documentation-4e5151?logo=gitbook)](https://dexrnzacattack.github.io/libLCE)
+[![Docs](https://img.shields.io/badge/Read%20Documentation-4e5151?logo=gitbook)](https://libLCE.dexrn.me)
 ![GitHub Downloads](https://img.shields.io/github/downloads/dexrnzacattack/libLCE/total)
 
 C++ Library for Minecraft: Legacy Console Edition file formats
