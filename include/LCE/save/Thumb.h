@@ -5,7 +5,7 @@
 #ifndef THUMB_H
 #define THUMB_H
 #include "LCE/libLCE.h"
-#include <BinaryIO/BinaryIO.h>
+#include <BinaryIO/BinaryBuffer.h>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -24,9 +24,10 @@ namespace lce::save {
      */
     class LIBLCE_API Thumb {
       public:
-        explicit Thumb(std::vector<uint8_t> data,
-                       bio::ByteOrder byteOrder = bio::ByteOrder::LITTLE,
-                       int headerSize = 0x100, bool use4ByteWideChar = false);
+        explicit Thumb(
+            std::vector<uint8_t> data,
+            bio::util::ByteOrder byteOrder = bio::util::ByteOrder::LITTLE,
+            int headerSize = 0x100, bool use4ByteWideChar = false);
 
         [[nodiscard]] std::wstring getWorldName() const;
         void setWorldName(const std::wstring &name);

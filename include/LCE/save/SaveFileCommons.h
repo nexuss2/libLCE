@@ -8,7 +8,7 @@
 
 #include "LCE/filesystem/Filesystem.h"
 #include "LCE/libLCE.h"
-#include <BinaryIO/BinaryIO.h>
+#include <BinaryIO/BinaryBuffer.h>
 #include <optional>
 #include <string>
 #include <variant>
@@ -49,14 +49,15 @@ namespace lce::save {
                                        public io::Serializable {
       protected:
         /** Creates a save file with the contents of the given Filesystem */
-        SaveFileCommons(const Filesystem &fs, const bio::ByteOrder byteOrder,
+        SaveFileCommons(const Filesystem &fs,
+                        const bio::util::ByteOrder byteOrder,
                         const uint16_t origVersion = 11,
                         const uint16_t version = 11)
             : Filesystem(fs), mOriginalVersion(origVersion), mVersion(version),
               mByteOrder(byteOrder) {};
 
         explicit SaveFileCommons(
-            const bio::ByteOrder byteOrder = bio::ByteOrder::LITTLE,
+            const bio::util::ByteOrder byteOrder = bio::util::ByteOrder::LITTLE,
             const uint16_t origVersion = 11, const uint16_t version = 11)
             : mOriginalVersion(origVersion), mVersion(version),
               mByteOrder(byteOrder) {};
@@ -85,16 +86,16 @@ namespace lce::save {
         static SaveFileCommons *deserializeAuto(std::vector<uint8_t> &data);
 
         /** @returns The serialized save file's version */
-        static uint16_t
-        getVersionFromData(std::vector<uint8_t> &data,
-                           bio::ByteOrder byteOrder = bio::ByteOrder::LITTLE);
+        static uint16_t getVersionFromData(
+            std::vector<uint8_t> &data,
+            bio::util::ByteOrder byteOrder = bio::util::ByteOrder::LITTLE);
 
         /** @returns The save file's original version */
         [[nodiscard]] uint16_t getOriginalVersion() const;
         /** @returns The save file's version */
         [[nodiscard]] uint16_t getVersion() const;
         /** @returns The save file's byte order (endianness) */
-        [[nodiscard]] bio::ByteOrder getByteOrder() const;
+        [[nodiscard]] bio::util::ByteOrder getByteOrder() const;
         /** Sets the save file's original version */
         void setOriginalVersion(uint16_t version);
         /** Sets the save file's version
@@ -104,7 +105,7 @@ namespace lce::save {
          */
         void setVersion(uint16_t version);
         /** Sets the save file's byte order (endianness) */
-        void setEndian(bio::ByteOrder byteOrder);
+        void setEndian(bio::util::ByteOrder byteOrder);
 
         /** Migrates the current save file to the chosen version should there be
          * any differences */
@@ -114,7 +115,7 @@ namespace lce::save {
          *
          * @returns The save file's byte order (endianness)
          */
-        static bio::ByteOrder detectByteOrder(std::vector<uint8_t> data);
+        static bio::util::ByteOrder detectByteOrder(std::vector<uint8_t> data);
 
         friend std::wostream &operator<<(std::wostream &wos,
                                          const SaveFileCommons &f) {
@@ -137,7 +138,7 @@ namespace lce::save {
         // NOTE: this could be wrong name
         uint16_t mOriginalVersion;
         uint16_t mVersion;
-        bio::ByteOrder mByteOrder;
+        bio::util::ByteOrder mByteOrder;
     };
 } // namespace lce::save
 

@@ -48,22 +48,22 @@ namespace lce::save {
       public:
         explicit SaveFileOld(
             std::vector<uint8_t> data,
-            bio::ByteOrder byteOrder =
-                bio::ByteOrder::BIG); // big endian cuz xb360 was the only
-                                      // edition with this format
+            bio::util::ByteOrder byteOrder =
+                bio::util::ByteOrder::BIG); // big endian cuz xb360 was the only
+                                            // edition with this format
 
         /** Creates an old format save file */
-        explicit SaveFileOld(bio::ByteOrder byteOrder = bio::ByteOrder::BIG,
-                             uint16_t origVersion = B0033,
-                             uint16_t version = B0033);
+        explicit SaveFileOld(
+            bio::util::ByteOrder byteOrder = bio::util::ByteOrder::BIG,
+            uint16_t origVersion = B0033, uint16_t version = B0033);
 
         /** Creates an old format save file with the contents of a physical
          * folder
          */
-        explicit SaveFileOld(const Filesystem &fs,
-                             bio::ByteOrder byteOrder = bio::ByteOrder::BIG,
-                             uint16_t origVersion = B0033,
-                             uint16_t version = B0033);
+        explicit SaveFileOld(
+            const Filesystem &fs,
+            bio::util::ByteOrder byteOrder = bio::util::ByteOrder::BIG,
+            uint16_t origVersion = B0033, uint16_t version = B0033);
 
         SaveFileCommons *migrateVersion(uint16_t version) override;
 

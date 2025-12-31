@@ -54,9 +54,9 @@ EMSCRIPTEN_BINDINGS(libLCE) {
     emscripten::function("VectorFromUInt8Array", &VectorFromUInt8Array);
     emscripten::function("VectorToUInt8Array", &VectorToUInt8Array);
 
-    emscripten::enum_<bio::ByteOrder>("ByteOrder")
-        .value("LITTLE", bio::ByteOrder::LITTLE)
-        .value("BIG", bio::ByteOrder::BIG);
+    emscripten::enum_<bio::util::ByteOrder>("ByteOrder")
+        .value("LITTLE", bio::util::ByteOrder::LITTLE)
+        .value("BIG", bio::util::ByteOrder::BIG);
 
     emscripten::enum_<lce::compression::Compression::Type>("CompressionType")
         .value("ZLIB", lce::compression::Compression::Type::ZLIB)
@@ -186,9 +186,9 @@ EMSCRIPTEN_BINDINGS(libLCE) {
 
     emscripten::class_<lce::save::SaveFile,
                        emscripten::base<lce::save::SaveFileCommons>>("SaveFile")
-        .constructor<bio::ByteOrder, uint16_t, uint16_t>()
-        .constructor<bio::ByteOrder>()
-        .constructor<std::vector<uint8_t>, bio::ByteOrder>()
+        .constructor<bio::util::ByteOrder, uint16_t, uint16_t>()
+        .constructor<bio::util::ByteOrder>()
+        .constructor<std::vector<uint8_t>, bio::util::ByteOrder>()
         .constructor()
         .function("serialize", &lce::save::SaveFile::serialize,
                   emscripten::allow_raw_pointer<const uint8_t *>());
@@ -196,14 +196,14 @@ EMSCRIPTEN_BINDINGS(libLCE) {
     emscripten::class_<lce::save::SaveFileOld,
                        emscripten::base<lce::save::SaveFileCommons>>(
         "SaveFileOld")
-        .constructor<bio::ByteOrder>()
-        .constructor<std::vector<uint8_t>, bio::ByteOrder>()
+        .constructor<bio::util::ByteOrder>()
+        .constructor<std::vector<uint8_t>, bio::util::ByteOrder>()
         .function("serialize", &lce::save::SaveFileOld::serialize,
                   emscripten::allow_raw_pointer<const uint8_t *>());
 
     // TODO: make emscripten friendly
     emscripten::class_<lce::loc::Language>("Language")
-        .constructor<bio::BinaryIO &>()
+        .constructor<bio::BinaryBuffer &>()
         .constructor<uint8_t, uint32_t, std::string, uint32_t,
                      std::vector<std::string>>()
         .function("serialize", &lce::loc::Language::serialize,
@@ -225,7 +225,7 @@ EMSCRIPTEN_BINDINGS(libLCE) {
         .property("size", &lce::loc::LocalizationFile::getSize);
 
     emscripten::class_<lce::save::Thumb>("Thumb")
-        .constructor<std::vector<uint8_t>, bio::ByteOrder, int, bool>()
+        .constructor<std::vector<uint8_t>, bio::util::ByteOrder, int, bool>()
         .property("worldName", &lce::save::Thumb::getWorldName,
                   &lce::save::Thumb::setWorldName)
         .property("image", &lce::save::Thumb::getImage,

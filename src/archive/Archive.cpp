@@ -3,7 +3,9 @@
 //
 
 #include "LCE/archive/Archive.h"
-#include <BinaryIO/BinaryIO.h>
+
+#include <BinaryIO/BinaryBuffer.h>
+#include <BinaryIO/util/string/StringConverter.h>
 
 namespace lce::arc {
     Archive::Archive(const Filesystem &fs) : Filesystem(fs) {};
@@ -12,7 +14,7 @@ namespace lce::arc {
     Archive::Archive(std::vector<uint8_t> data) : Archive(data.data()) {}
 
     Archive::Archive(uint8_t *data) {
-        bio::BinaryIO io(data);
+        bio::BinaryBuffer io(data);
         const uint32_t fileCount = io.readBE<uint32_t>();
 
         for (uint32_t i = 0; i < fileCount; i++) {
@@ -29,7 +31,8 @@ namespace lce::arc {
             io.readInto(d.data(), size);
             io.seek(oldPos);
 
-            std::wstring wname = bio::BinaryIO::stringToWString(name);
+            std::wstring wname =
+                bio::util::string::StringConverter::stringToWString(name);
             windowsToUnixDelimiter(wname); // convert paths
 
             this->createFileRecursive(wname, d);
@@ -37,7 +40,7 @@ namespace lce::arc {
     }
 
     uint8_t *Archive::serialize() const {
-        bio::BinaryIO io(new uint8_t[this->getSize()]);
+        bio::BinaryBuffer io(new uint8_t[this->getSize()]);
 
         const fs::Directory *root = getRoot();
 
@@ -53,7 +56,9 @@ namespace lce::arc {
                 unixToWindowsDelimiter(path);
 
                 io.writeBE<uint16_t>(path.length());
-                io.writeString(bio::BinaryIO::wstringToString(path));
+                io.writeString(
+                    bio::util::string::StringConverter::wstringToString(path),
+                    false);
                 // this stores the area where the file offset is written.
                 offsetPositions[i] = io.getPosition();
                 io.writeBE<uint32_t>(0);

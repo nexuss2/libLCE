@@ -15,6 +15,11 @@
 
 namespace lce::fs {
 
+    // TODO I would like to move this to it's own lib, and make use of file
+    // streams and such this could allow for one interface for both physical and
+    // virtual files. e.g. having a file that holds a handle/stream of a file on
+    // the user's physical hard disk.
+
     /** Contains a root folder and helper methods for traversing the filesystem
      *
      * Can be extended to make custom filesystem types

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "LCE/libLCE.h"
-#include <BinaryIO/BinaryIO.h>
+#include <BinaryIO/BinaryBuffer.h>
 
 namespace lce::compression {
     /** Compression methods
@@ -103,8 +103,9 @@ namespace lce::compression {
                                std::vector<uint8_t> &out, Type type);
 
         /** @returns The compressed save file's size */
-        static uint32_t getCompressedSaveFileSize(std::vector<uint8_t> &in,
-                                                  bio::ByteOrder byteOrder);
+        static uint32_t
+        getCompressedSaveFileSize(std::vector<uint8_t> &in,
+                                  bio::util::ByteOrder byteOrder);
     };
 
 } // namespace lce::compression

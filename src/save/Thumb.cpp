@@ -3,23 +3,29 @@
 //
 
 #include "save/Thumb.h"
+
+#include "BinaryIO/util/string/StringConverter.h"
+
 #include <lodepng/lodepng.h>
 
 #include <utility>
 
 namespace lce::save {
-    Thumb::Thumb(std::vector<uint8_t> data, const bio::ByteOrder byteOrder,
-                 const int headerSize, const bool use4ByteWideChar) {
+    Thumb::Thumb(std::vector<uint8_t> data,
+                 const bio::util::ByteOrder byteOrder, const int headerSize,
+                 const bool use4ByteWideChar) {
         this->mName = L"New World"; // default name
 
         if (headerSize != 0) {
-            bio::BinaryIO io((data.data()));
+            bio::BinaryBuffer io((data.data()));
             if (!use4ByteWideChar) {
-                this->mName = bio::BinaryIO::u16stringToWstring(
-                    io.readWChar2ByteNT(byteOrder));
+                this->mName =
+                    bio::util::string::StringConverter::u16stringToWstring(
+                        io.readU16StringNT(byteOrder));
             } else {
-                this->mName = bio::BinaryIO::u32stringToWstring(
-                    io.readWChar4ByteNT(byteOrder));
+                this->mName =
+                    bio::util::string::StringConverter::u32stringToWstring(
+                        io.readU32StringNT(byteOrder));
             }
         }
 

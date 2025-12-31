@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "LCE/save/SaveFileCommons.h"
-#include <BinaryIO/BinaryIO.h>
+#include <BinaryIO/BinaryBuffer.h>
 
 namespace lce::save {
     /**
@@ -53,17 +53,20 @@ namespace lce::save {
     class LIBLCE_API SaveFile final : public SaveFileCommons {
       public:
         /** Creates a save file */
-        explicit SaveFile(bio::ByteOrder byteOrder = bio::ByteOrder::LITTLE,
-                          uint16_t origVersion = 11, uint16_t version = 11);
+        explicit SaveFile(
+            bio::util::ByteOrder byteOrder = bio::util::ByteOrder::LITTLE,
+            uint16_t origVersion = 11, uint16_t version = 11);
 
         /** Creates a save file with the contents of a physical folder */
-        explicit SaveFile(const Filesystem &fs,
-                          bio::ByteOrder byteOrder = bio::ByteOrder::LITTLE,
-                          uint16_t origVersion = 11, uint16_t version = 11);
+        explicit SaveFile(
+            const Filesystem &fs,
+            bio::util::ByteOrder byteOrder = bio::util::ByteOrder::LITTLE,
+            uint16_t origVersion = 11, uint16_t version = 11);
 
         /** Creates a save file from serialized data */
-        explicit SaveFile(std::vector<uint8_t> data,
-                          bio::ByteOrder byteOrder = bio::ByteOrder::LITTLE);
+        explicit SaveFile(
+            std::vector<uint8_t> data,
+            bio::util::ByteOrder byteOrder = bio::util::ByteOrder::LITTLE);
 
         uint8_t *serialize() const override;
 

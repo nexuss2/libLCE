@@ -3,19 +3,22 @@
 //
 
 #include "LCE/soundbank/Soundbank.h"
-#include <BinaryIO/BinaryIO.h>
+
+#include "BinaryIO/util/string/StringConverter.h"
+
+#include <BinaryIO/BinaryBuffer.h>
 
 #include <filesystem>
 #include <utility>
 
 namespace lce::msscmp {
     Soundbank::Soundbank(uint8_t *data) {
-        bio::BinaryIO io(data);
+        bio::BinaryBuffer io(data);
 
         const std::string magic = io.readString(4);
 
-        mByteOrder =
-            magic == "BANK" ? bio::ByteOrder::BIG : bio::ByteOrder::LITTLE;
+        mByteOrder = magic == "BANK" ? bio::util::ByteOrder::BIG
+                                     : bio::util::ByteOrder::LITTLE;
 
         io.seek(0x18);
         const uint32_t firstVal = io.read<uint32_t>(mByteOrder);
@@ -73,13 +76,13 @@ namespace lce::msscmp {
             const uint32_t currentOffset = io.getPosition();
 
             io.seek(nameOffset);
-            std::string fileName = io.readStringNullTerminated();
+            std::string fileName = io.readStringNT();
             io.seek(currentOffset);
 
             io.read<uint32_t>(mByteOrder);
 
             const uint32_t dataOffset =
-                io.read<uint32_t>(bio::ByteOrder::LITTLE);
+                io.read<uint32_t>(bio::util::ByteOrder::LITTLE);
             io.read<uint32_t>(mByteOrder);
             io.read<uint32_t>(mByteOrder);
             uint32_t sampleRate = io.read<uint32_t>(mByteOrder);
@@ -94,7 +97,8 @@ namespace lce::msscmp {
             io.readInto(d.data(), fileSize);
             io.seek(oldPos);
 
-            std::wstring wname = bio::BinaryIO::stringToWString(fileName);
+            std::wstring wname =
+                bio::util::string::StringConverter::stringToWString(fileName);
 
             std::filesystem::path path(
                 wname); // TODO: I forgot about this, we could use this I think
@@ -112,7 +116,7 @@ namespace lce::msscmp {
     Soundbank::Soundbank(std::vector<uint8_t> data) : Soundbank(data.data()) {}
 
     bool Soundbank::isSoundbank(uint8_t *data) {
-        bio::BinaryIO io(data);
+        bio::BinaryBuffer io(data);
         const std::string magic = io.readString(4);
 
         return magic == "BANK" || magic == "KNAB";

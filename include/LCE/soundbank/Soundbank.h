@@ -8,7 +8,7 @@
 #include "LCE/filesystem/Filesystem.h"
 #include "LCE/libLCE.h"
 #include "LCE/soundbank/BinkaFile.h"
-#include <BinaryIO/BinaryIO.h>
+#include <BinaryIO/BinaryBuffer.h>
 #include <vector>
 
 namespace lce::msscmp {
@@ -26,11 +26,11 @@ namespace lce::msscmp {
         static bool isSoundbank(uint8_t *data);
 
       private:
-        bio::ByteOrder mByteOrder;
+        bio::util::ByteOrder mByteOrder;
         Type mType;
 
-        static uint64_t readUintByType(bio::BinaryIO &io,
-                                       const bio::ByteOrder byteOrder,
+        static uint64_t readUintByType(bio::BinaryBuffer &io,
+                                       const bio::util::ByteOrder byteOrder,
                                        const Type type) {
             return type == NEW_GEN ? io.read<uint64_t>(byteOrder)
                                    : io.read<uint32_t>(byteOrder);

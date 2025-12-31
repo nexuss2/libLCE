@@ -12,7 +12,7 @@
 #include "LCE/soundbank/Soundbank.h"
 #include "util.h"
 
-#include <BinaryIO/BinaryIO.h>
+#include <BinaryIO/BinaryBuffer.h>
 
 namespace lce::tests::formats {
     void arcTest() {
@@ -64,8 +64,8 @@ namespace lce::tests::formats {
                    file.getSize());
     }
 
-    void msscmpTest(bio::ByteOrder endian) {
-        std::string order = endian == bio::ByteOrder::LITTLE ? "le" : "be";
+    void msscmpTest(bio::util::ByteOrder endian) {
+        std::string order = endian == bio::util::ByteOrder::LITTLE ? "le" : "be";
         std::string name = "msscmp-" + order + ".msscmp";
 
         OPEN_FILE(name, f);
@@ -81,7 +81,7 @@ namespace lce::tests::formats {
         OPEN_FILE("savegame_pr.dat", f);
 
         // read be file
-        save::SaveFileOld file = save::SaveFileOld(f, bio::ByteOrder::BIG);
+        save::SaveFileOld file = save::SaveFileOld(f, bio::util::ByteOrder::BIG);
 
         DebugLog("oldSaveTest: File version is " << file.getVersion());
 
@@ -99,7 +99,7 @@ namespace lce::tests::formats {
                    reinterpret_cast<char *>(file.serialize()), file.getSize());
 
         // write le file
-        file.setEndian(bio::ByteOrder::LITTLE);
+        file.setEndian(bio::util::ByteOrder::LITTLE);
 
         _WRITE_FILE("savegame_pr_switch-to-le_out.dat",
                     reinterpret_cast<char *>(file.serialize()), file.getSize(),
@@ -129,9 +129,9 @@ namespace lce::tests::formats {
                     outOld);
     }
 
-    void saveTestEndian(bio::ByteOrder endian) {
+    void saveTestEndian(bio::util::ByteOrder endian) {
         const std::string order =
-            endian == bio::ByteOrder::LITTLE ? "le" : "be";
+            endian == bio::util::ByteOrder::LITTLE ? "le" : "be";
         const std::string inName = "savegame-" + order + ".dat";
         const std::string outName = "savegame-" + order + "_out.dat";
 
@@ -139,7 +139,7 @@ namespace lce::tests::formats {
 
         const save::SaveFile file = save::SaveFile(f, endian);
         // lce::tests::writeFS(&file, L"savegame-" +
-        // bio::BinaryIO::stringToWString(order));
+        // bio::util::string::StringConverter::stringToWString(order));
 
         DebugLog("saveTestEndian: File version is " << file.getVersion());
 
@@ -162,7 +162,7 @@ namespace lce::tests::formats {
         std::vector<uint8_t> fd;
 
         const uint64_t s = compression::Compression::getCompressedSaveFileSize(
-            f, bio::ByteOrder::LITTLE);
+            f, bio::util::ByteOrder::LITTLE);
 
         if (bool dc = compression::Compression::decompressVita(f, fd, s, 8);
             dc == false)
@@ -171,7 +171,7 @@ namespace lce::tests::formats {
         WRITE_FILE("savegame-vita_dc.dat", reinterpret_cast<char *>(fd.data()),
                    fd.size());
 
-        save::SaveFile file = save::SaveFile(fd, bio::ByteOrder::LITTLE);
+        save::SaveFile file = save::SaveFile(fd, bio::util::ByteOrder::LITTLE);
 
 #if WRITE_FS
         file.getRoot()->writeOut(util::output / "savegame-vita");
@@ -188,24 +188,24 @@ namespace lce::tests::formats {
     //     const world::Region file =
     //         world::Region(f, L"r.0.0.mcr",
     //         compression::Compression::Type::ZLIB,
-    //                       bio::ByteOrder::BIG);
+    //                       bio::util::ByteOrder::BIG);
     //     std::cout << "regionTest: " << "X: " << file.getX()
     //               << ", Z: " << file.getZ() << ", DIM: " << file.getDim()
     //               << std::endl;
     // }
 
-    void saveTestSwitch(bio::ByteOrder endian) {
-        std::string order = endian == bio::ByteOrder::LITTLE ? "le" : "be";
-        std::string rOrder = endian == bio::ByteOrder::LITTLE ? "be" : "le";
+    void saveTestSwitch(bio::util::ByteOrder endian) {
+        std::string order = endian == bio::util::ByteOrder::LITTLE ? "le" : "be";
+        std::string rOrder = endian == bio::util::ByteOrder::LITTLE ? "be" : "le";
         std::string inName = "savegame-" + rOrder + ".dat";
         std::string outName =
             "savegame-" + rOrder + "_switch-to-" + order + "_out.dat";
 
         OPEN_FILE(inName, f);
 
-        save::SaveFile file = save::SaveFile(f, endian == bio::ByteOrder::LITTLE
-                                                    ? bio::ByteOrder::BIG
-                                                    : bio::ByteOrder::LITTLE);
+        save::SaveFile file = save::SaveFile(f, endian == bio::util::ByteOrder::LITTLE
+                                                    ? bio::util::ByteOrder::BIG
+                                                    : bio::util::ByteOrder::LITTLE);
 
 #if WRITE_FS
         file.getRoot()->writeOut(util::output / ("savegame-endian_switch-to-" +
@@ -232,9 +232,9 @@ namespace lce::tests::formats {
         colorWriteTest(*color::ColorFileCommons::deserializeAuto(f));
     }
 
-    void thumbTest(const bio::ByteOrder endian, int headerSize, bool use4Byte) {
+    void thumbTest(const bio::util::ByteOrder endian, int headerSize, bool use4Byte) {
         const std::string order =
-            endian == bio::ByteOrder::LITTLE ? "le" : "be";
+            endian == bio::util::ByteOrder::LITTLE ? "le" : "be";
         const std::string name = "THUMB-" + order + (use4Byte ? "_switch" : "");
 
         OPEN_FILE(name, f);

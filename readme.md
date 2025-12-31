@@ -8,6 +8,9 @@ C++ Library for Minecraft: Legacy Console Edition file formats
 Downloads for Linux, macOS, Windows, and Emscripten (incomplete) are available
 at https://nightly.link/DexrnZacAttack/libLCE/workflows/cmake-multi-platform/main?preview
 
+> [!IMPORTANT]
+> A refactor is planned for this project.
+
 > [!NOTE]
 > Region and Chunk reading will be done in Lodestone.LCE w/
 > Lodestone.Level ([libLodestone](https://github.com/Team-Lodestone/libLodestone))

@@ -3,7 +3,7 @@
 //
 
 #include "LCE/color/ColorFile.h"
-#include <BinaryIO/BinaryIO.h>
+#include <BinaryIO/BinaryBuffer.h>
 
 namespace lce::color {
     ColorFileOld::ColorFileOld(
@@ -15,7 +15,7 @@ namespace lce::color {
         const uint32_t version)
         : ColorFileCommons(colors, version) {}
 
-    ColorFileOld::ColorFileOld(bio::BinaryIO &io) {
+    ColorFileOld::ColorFileOld(bio::BinaryBuffer &io) {
         this->mVersion = io.readBE<uint32_t>();
 
         const uint32_t cc = io.readBE<uint32_t>();
@@ -28,14 +28,14 @@ namespace lce::color {
     }
 
     uint8_t *ColorFileOld::serialize() const {
-        bio::BinaryIO io(this->getSize());
+        bio::BinaryBuffer io(this->getSize());
 
         io.writeBE<uint32_t>(this->mVersion);
 
         io.writeBE<uint32_t>(this->mColors.size());
         for (auto [name, color] : this->mColors) {
             io.writeBE<uint16_t>(name.size());
-            io.writeString(name);
+            io.writeString(name, false);
 
             io.writeBytes(color.serialize(), color.getSize());
         }

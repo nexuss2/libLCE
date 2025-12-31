@@ -2,7 +2,7 @@
 // Created by DexrnZacAttack on 12/21/2024.
 //
 
-#include <BinaryIO/BinaryIO.h>
+#include <BinaryIO/BinaryBuffer.h>
 
 #include "LCE/save/SaveFile.h"
 #include "LCE/save/SaveFileCommons.h"
@@ -26,7 +26,7 @@ namespace lce::save {
 
     SaveFileCommons *
     SaveFileCommons::deserializeAuto(std::vector<uint8_t> &data) {
-        const bio::ByteOrder e = detectByteOrder(data);
+        const bio::util::ByteOrder e = detectByteOrder(data);
 
         if (const uint16_t v = getVersionFromData(data, e); v > B0033)
             return new SaveFile(data, e);
@@ -36,8 +36,8 @@ namespace lce::save {
 
     uint16_t
     SaveFileCommons::getVersionFromData(std::vector<uint8_t> &data,
-                                        const bio::ByteOrder byteOrder) {
-        bio::BinaryIO io(data.data());
+                                        const bio::util::ByteOrder byteOrder) {
+        bio::BinaryBuffer io(data.data());
         io.seek(10);
         return io.read<uint16_t>(byteOrder);
     }
@@ -48,7 +48,7 @@ namespace lce::save {
 
     uint16_t SaveFileCommons::getVersion() const { return this->mVersion; }
 
-    bio::ByteOrder SaveFileCommons::getByteOrder() const {
+    bio::util::ByteOrder SaveFileCommons::getByteOrder() const {
         return this->mByteOrder;
     }
 
@@ -60,17 +60,17 @@ namespace lce::save {
         this->mVersion = version;
     }
 
-    void SaveFileCommons::setEndian(const bio::ByteOrder byteOrder) {
+    void SaveFileCommons::setEndian(const bio::util::ByteOrder byteOrder) {
         this->mByteOrder = byteOrder;
     }
 
-    bio::ByteOrder SaveFileCommons::detectByteOrder(std::vector<uint8_t> data) {
-        bio::BinaryIO io(data.data());
+    bio::util::ByteOrder SaveFileCommons::detectByteOrder(std::vector<uint8_t> data) {
+        bio::BinaryBuffer io(data.data());
 
         io.seek(4 + 4 + 2);
 
         const uint8_t *s = io.getDataRelative();
 
-        return *s != 0x00 ? bio::ByteOrder::LITTLE : bio::ByteOrder::BIG;
+        return *s != 0x00 ? bio::util::ByteOrder::LITTLE : bio::util::ByteOrder::BIG;
     }
 } // namespace lce::save

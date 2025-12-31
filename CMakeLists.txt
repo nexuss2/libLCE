@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(LCE VERSION 1.2.4)
 
-set(VERSION_SUFFIX "-dev.2") # used for non-stable versions
+set(VERSION_SUFFIX "-dev.3") # used for non-stable versions
 set(CMAKE_CXX_STANDARD 17)
 
 message(STATUS "${CMAKE_SYSTEM_PROCESSOR}")
@@ -69,6 +69,7 @@ set(HEADERS
         include/LCE/soundbank/BinkaFile.h
         # Other
         include/LCE/compression/Compression.h
+        include/LCE/util/StringUtilities.h
         # Filesystem
         include/LCE/filesystem/FSObject.h
         include/LCE/filesystem/Directory.h
@@ -100,6 +101,7 @@ set(FILES
         src/filesystem/File.cpp
         src/filesystem/Directory.cpp
         src/io/Serializable.cpp
+        src/util/StringUtilities.cpp
 )
 
 option(ENABLE_OPTIMIZATIONS "Enable compiler optimizations" OFF)

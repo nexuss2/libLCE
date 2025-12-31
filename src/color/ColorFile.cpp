@@ -3,10 +3,10 @@
 //
 
 #include "LCE/color/ColorFile.h"
-#include <BinaryIO/BinaryIO.h>
+#include <BinaryIO/BinaryBuffer.h>
 
 namespace lce::color {
-    ColorFile::ColorFile(bio::BinaryIO &io) {
+    ColorFile::ColorFile(bio::BinaryBuffer &io) {
         this->mVersion = io.readBE<uint32_t>();
 
         const uint32_t colorCount = io.readBE<uint32_t>();
@@ -62,14 +62,14 @@ namespace lce::color {
     }
 
     uint8_t *ColorFile::serialize() const {
-        bio::BinaryIO io(this->getSize());
+        bio::BinaryBuffer io(this->getSize());
 
         io.writeBE<uint32_t>(this->mVersion);
         io.writeBE<uint32_t>(this->mColors.size());
 
         for (auto [name, color] : this->mColors) {
             io.writeBE<uint16_t>(name.size());
-            io.writeString(name);
+            io.writeString(name, false);
 
             io.writeBytes(color.serialize(), color.getSize());
         }
@@ -78,7 +78,7 @@ namespace lce::color {
 
         for (auto [name, color] : this->mWorldColors) {
             io.writeBE<uint16_t>(name.size());
-            io.writeString(name);
+            io.writeString(name, false);
 
             io.writeBytes(color.serialize(), color.getSize());
         }
@@ -103,7 +103,7 @@ namespace lce::color {
         : mVersion(version), mColors(colors) {}
 
     ColorFileCommons *ColorFileCommons::deserializeAuto(uint8_t *data) {
-        bio::BinaryIO io(data);
+        bio::BinaryBuffer io(data);
 
         const ColorFileVersion version = io.readBE<ColorFileVersion>();
 

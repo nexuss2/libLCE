@@ -9,14 +9,19 @@
 #include <vector>
 
 #include "save/SaveFile.h"
-#include <BinaryIO/BinaryIO.h>
+
+#include "BinaryIO/util/string/StringConverter.h"
+#include "util/StringUtilities.h"
+
+#include <BinaryIO/BinaryBuffer.h>
 
 namespace lce::save {
-    SaveFile::SaveFile(const bio::ByteOrder byteOrder,
+    SaveFile::SaveFile(const bio::util::ByteOrder byteOrder,
                        const uint16_t origVersion, const uint16_t version)
         : SaveFileCommons(byteOrder, origVersion, version) {}
 
-    SaveFile::SaveFile(const Filesystem &fs, const bio::ByteOrder byteOrder,
+    SaveFile::SaveFile(const Filesystem &fs,
+                       const bio::util::ByteOrder byteOrder,
                        const uint16_t origVersion, const uint16_t version)
         : SaveFileCommons(fs, byteOrder, origVersion, version) {};
 
@@ -25,9 +30,10 @@ namespace lce::save {
      * @param data The data you want to read (a save file)
      * @param byteOrder The endianness of the data being read
      */
-    SaveFile::SaveFile(std::vector<uint8_t> data, bio::ByteOrder byteOrder) {
+    SaveFile::SaveFile(std::vector<uint8_t> data,
+                       bio::util::ByteOrder byteOrder) {
         this->mByteOrder = byteOrder;
-        bio::BinaryIO io(data.data());
+        bio::BinaryBuffer io(data.data());
 
         const uint32_t indexOffset = io.read<uint32_t>(this->mByteOrder);
 
@@ -62,9 +68,10 @@ namespace lce::save {
             io.seek(indexOffset + (SaveFile::getIndexEntrySize() * i));
             // read the index entry
 
-            std::wstring name = bio::BinaryIO::u16stringToWstring(
-                io.readWChar2Byte(64, this->mByteOrder));
-            bio::BinaryIO::trimWString(name);
+            std::wstring name =
+                bio::util::string::StringConverter::u16stringToWstring(
+                    io.readU16String(64, this->mByteOrder));
+            lce::util::StringUtilities::trimEndNullBytes(name);
 
             const uint32_t size = io.read<uint32_t>(this->mByteOrder);
             const uint32_t offset = io.read<uint32_t>(this->mByteOrder);
@@ -79,7 +86,7 @@ namespace lce::save {
             io.readInto(d.data(), size);
 
             // create the file
-            this->createFileRecursive(name, d);
+            (void)this->createFileRecursive(name, d);
         }
     }
 
@@ -88,7 +95,7 @@ namespace lce::save {
      * @return Pointer to the save file
      */
     uint8_t *SaveFile::serialize() const {
-        bio::BinaryIO io(this->getSize());
+        bio::BinaryBuffer io(this->getSize());
         const fs::Directory *root = getRoot();
 
         uint32_t indexOffset = calculateIndexOffset();
@@ -116,7 +123,8 @@ namespace lce::save {
 
             io.seek(indexOffset + (getIndexEntrySize() * i));
 
-            std::u16string n = bio::BinaryIO::wstringToU16string(path);
+            std::u16string n =
+                bio::util::string::StringConverter::wstringToU16string(path);
 
             if (path.length() > 64) {
                 std::wcerr << L"Filename '" << path
@@ -127,7 +135,7 @@ namespace lce::save {
             }
             n.resize(64);
 
-            io.writeWChar2Byte(n, this->mByteOrder, false);
+            io.writeU16String(n, this->mByteOrder, false);
             io.write<uint32_t>(innerFile.getSize(), this->mByteOrder);
             io.write<uint32_t>(offset, this->mByteOrder);
             io.write<uint64_t>(innerFile.getModifiedTimestamp(),
