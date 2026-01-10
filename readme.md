@@ -9,6 +9,9 @@ Downloads for Linux, macOS, Windows, and Emscripten (incomplete) are available
 at https://nightly.link/DexrnZacAttack/libLCE/workflows/cmake-multi-platform/main?preview
 
 > [!IMPORTANT]
+> Pull Requests and Issues are only accepted on the [Codeberg repo](https://codeberg.org/Dexrn/libLCE).
+
+> [!IMPORTANT]
 > A refactor is planned for this project.
 
 > [!NOTE]
