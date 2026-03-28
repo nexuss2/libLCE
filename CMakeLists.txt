@@ -7,22 +7,24 @@ set(CMAKE_CXX_STANDARD 17)
 message(STATUS "${CMAKE_SYSTEM_PROCESSOR}")
 
 include(FetchContent)
-FetchContent_Declare(
-        BIO
-        GIT_REPOSITORY https://github.com/DexrnZacAttack/libBIO.git
-        GIT_TAG main
-)
-FetchContent_MakeAvailable(BIO)
 
-include_directories(include external)
+FetchContent_Declare(
+    BIO
+    GIT_REPOSITORY https://github.com/nexuss2/libBIO.git
+    GIT_TAG main
+)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+    set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+endif()
+
+FetchContent_MakeAvailable(BIO)
 
 # because _DEBUG is not universal
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DCMAKE_BUILD_DEBUG)
 endif ()
-
-include_directories(external/emsdk/upstream/emscripten/system/include)
-link_directories(external/emsdk/upstream/emscripten/system/lib)
 
 set(LODEPNG_FILES
         external/lodepng/lodepng.h
@@ -111,6 +113,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     # weird?
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -sNO_DISABLE_EXCEPTION_CATCHING -s USE_ZLIB=1 -s WASM_BIGINT -s MODULARIZE=1 -sEXPORT_ES6=1 -s EXPORT_ALL=1 -s EXPORTED_RUNTIME_METHODS=['ccall','cwrap','getValue','setValue'] -s EXPORTED_FUNCTIONS=['_malloc'] -s ALLOW_MEMORY_GROWTH=1")
     add_executable(LCE ${HEADERS} ${FILES} ${LODEPNG_FILES})
+    target_include_directories(LCE PUBLIC include)
     #    target_link_options(LCE PRIVATE --emit-tsd libLCE.d.ts)
 else ()
     if (ENABLE_OPTIMIZATIONS STREQUAL "ON")
@@ -137,6 +140,8 @@ else ()
             ${CMAKE_CURRENT_SOURCE_DIR}/include/LCE
     )
     target_compile_definitions(LCE PRIVATE LIBLCE_EXPORTS)
+
+    target_include_directories(LCE PUBLIC include)
 
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests EXCLUDE_FROM_ALL)
 endif ()
