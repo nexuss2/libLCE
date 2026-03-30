@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
-project(LCE VERSION 1.2.4)
+project(LCE VERSION 1.2.5)
 
-set(VERSION_SUFFIX "-dev.3") # used for non-stable versions
+set(VERSION_SUFFIX "-dev.4") # used for non-stable versions
 set(CMAKE_CXX_STANDARD 17)
 
 message(STATUS "${CMAKE_SYSTEM_PROCESSOR}")
@@ -10,7 +10,7 @@ include(FetchContent)
 FetchContent_Declare(
         BIO
         GIT_REPOSITORY https://github.com/DexrnZacAttack/libBIO.git
-        GIT_TAG main
+        GIT_TAG 2.0.8
 )
 FetchContent_MakeAvailable(BIO)
 
